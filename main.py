@@ -1,48 +1,49 @@
-# This is a sample Python script.
-import numpy as np
-import matplotlib.pyplot as plt
+# Import libraries
 import pandas as pd
-from sklearn import datasets, svm
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.inspection import DecisionBoundaryDisplay
 from sklearn.metrics import accuracy_score
 from sklearn import tree
+import numpy as np
+import matplotlib.pyplot as plt
 
+from sklearn.datasets import load_iris
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.inspection import DecisionBoundaryDisplay
+import matplotlib.colors
 
-
-
-def main(name):
-    df = pd.read_csv("https://raw.githubusercontent.com/ianni-phd/Datasets/main/2022-11-12_calciatori_marcatura.csv",
-                     sep=';', decimal=',')
+def monoplot(
+        link="https://raw.githubusercontent.com/ianni-phd/Datasets/main/2022-11-12_calciatori_marcatura.csv",
+        target = "Classe",
+        features = ["Passaggio", "Marcatura", "Tiro", "Tecnica"],
+        pair=["Tiro", "Marcatura"]
+        # Tiro
+):
+    df = pd.read_csv(link, sep=';', decimal=',')
 
     # Make it binary
     dict_2_classes = {"D": "other", "C": "other", "A": "strickers"}
-    df["Classe"] = df["Classe"].apply(lambda x: dict_2_classes[x])
+    df[target] = df[target].apply(lambda x: dict_2_classes[x])
     classes_labels = list(pd.factorize(df["Classe"])[1])
-    df["Classe"] = pd.factorize(df["Classe"])[0]
+    df[target] = pd.factorize(df[target])[0]
     n_classes = len(classes_labels)
 
-    features = ["Passaggio", "Marcatura", "Tiro", "Tecnica"]  # Tiro
-    target = ["Classe"]
+    #target = ["Classe"]
 
     X = df[features].values
-    y = df["Classe"].values
+    y = df[target].values
 
     # focus on two features
-    pair = ["Tiro", "Marcatura"]
-
     X_2_cols = df[pair].values
     print(X_2_cols.shape)
-    X_2_cols
+    #X_2_cols
 
     # MODELING
-    clf = DecisionTreeClassifier()  # PRIMA PROVA
+    clf = DecisionTreeClassifier()                                  # PRIMA PROVA
     # clf = DecisionTreeClassifier(min_samples_leaf=2)              # SECONDA PROVA
-    clf = DecisionTreeClassifier(min_samples_leaf=2, max_depth=4)  # TERZA PROVA
+    clf = DecisionTreeClassifier(min_samples_leaf=2, max_depth=4)   # TERZA PROVA
     clf.fit(X_2_cols, y)
     y_prev = clf.predict(X_2_cols)
     accuracy = accuracy_score(y_prev, y)
-    accuracy
+    print("accuracy: ", accuracy)
 
     # Forecast Rabiot (out of the train!!!)
     print("Rabiot:")
@@ -51,9 +52,7 @@ def main(name):
     print("Features: ", rabiot_tiro_marcatura)
     print("Model prediction: ", y_prev_rabiot)
 
-    import matplotlib.colors
     cmap_yg_gr_lb = matplotlib.colors.ListedColormap(["yellow", "green", "lightblue"])
-    cmap_yg_gr_lb
 
     plot_colors = ["ygb" if n_classes == 3 else "yb"][0]
     # plot_step = 0.02
@@ -73,32 +72,28 @@ def main(name):
 
 
 
-def multiplot():
-    import numpy as np
-    import matplotlib.pyplot as plt
+def multiplot(
+        link = "https://raw.githubusercontent.com/ianni-phd/Datasets/main/2022-11-12_calciatori_marcatura.csv",
+        target = "Classe",
+        features = ["Passaggio", "Marcatura", "Tiro", "Tecnica"],
+        dict_2_classes = {"D": "other", "C": "other", "A": "strickers"}
+):
 
-    from sklearn.datasets import load_iris
-    from sklearn.tree import DecisionTreeClassifier
-    from sklearn.inspection import DecisionBoundaryDisplay
-    import matplotlib.colors
     cmap_yg_gr_lb = matplotlib.colors.ListedColormap(["yellow", "green", "lightblue"])
 
     # reading the datasdet
-    df = pd.read_csv("https://raw.githubusercontent.com/ianni-phd/Datasets/main/2022-11-12_calciatori_marcatura.csv",
-                     sep=';', decimal=',')
+    df = pd.read_csv(link, sep=';', decimal=',')
 
     # defining the classes
-    dict_2_classes = {"D": "other", "C": "other", "A": "strickers"}
-    df["Classe"] = df["Classe"].apply(lambda x: dict_2_classes[x])
-    classes_labels = list(pd.factorize(df["Classe"])[1])
-    df["Classe"] = pd.factorize(df["Classe"])[0]
+    df[target] = df[target].apply(lambda x: dict_2_classes[x])
+    classes_labels = list(pd.factorize(df[target])[1])
+    df[target] = pd.factorize(df[target])[0]
     n_classes = len(classes_labels)
 
-    features = ["Passaggio", "Marcatura", "Tiro", "Tecnica"]
-    target = ["Classe"]
+
 
     X = df[features].values
-    y = df["Classe"].values
+    y = df[target].values
 
     # Parameters
     plot_colors = ["ygb" if n_classes == 3 else "yb"][0]
@@ -151,6 +146,10 @@ def multiplot():
     plt.legend(loc="lower right", borderpad=0, handletextpad=0)
     _ = plt.axis("tight")
 
+
+def main():
+    monoplot()
+    #multiplot()
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
